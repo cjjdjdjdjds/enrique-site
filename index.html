@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enrique RP</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: Arial, sans-serif;
+    background: #0d0d0d;
+    color: #f0f0f0;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+header {
+    background: #1a1a1a;
+    border-bottom: 2px solid #ffd700;
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+header h1 {
+    color: #ffd700;
+    font-size: 22px;
+    letter-spacing: 1px;
+}
+header nav {
+    display: flex;
+    gap: 8px;
+}
+header nav button {
+    background: transparent;
+    color: #f0f0f0;
+    border: 1px solid #333;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+header nav button:hover {
+    border-color: #ffd700;
+    color: #ffd700;
+}
+header nav button.gold {
+    background: #ffd700;
+    color: #0d0d0d;
+    border-color: #ffd700;
+    font-weight: bold;
+}
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px;
+}
+.screen { display: none; }
+.screen.active { display: block; }
+h2 {
+    color: #ffd700;
+    margin-bottom: 16px;
+    font-size: 24px;
+}
+p { margin-bottom: 10px; }
+input, select {
+    width: 100%;
+    padding: 14px;
+    margin: 6px 0;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #f0f0f0;
+    font-size: 16px;
+    font-family: inherit;
+}
+input:focus, select:focus {
+    outline: none;
+    border-color: #ffd700;
+}
+button.action {
+    width: 100%;
+    padding: 14px;
+    background: #ffd700;
+    color: #0d0d0d;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+button.action:hover {
+    background: #ffcc00;
+}
+button.action:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.card {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 18px;
+    margin: 10px 0;
+}
+.card h3 {
+    color: #ffd700;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+}
+.stat {
+    background: #0d0d0d;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+}
+.stat .label {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.stat .value {
+    font-size: 18px;
+    color: #ffd700;
+    font-weight: bold;
+    word-break: break-all;
+}
+.error {
+    background: #2a0a0a;
+    color: #ff6666;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    border-left: 3px solid #ff4444;
+}
+.success {
+    background: #0a2a1a;
+    color: #4ecdc4;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 10px 0;
+    border-left: 3px solid #4ecdc4;
+}
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.tabs button {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px;
+    background: #1a1a1a;
+    color: #f0f0f0;
+    border: 1px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+}
+.tabs button.active {
+    background: #ffd700;
+    color: #0d0d0d;
+    border-color: #ffd700;
+    font-weight: bold;
+}
+.result {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    margin-top: 12px;
+}
+.leader-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: #0d0d0d;
+    border: 1px solid #333;
+    border-radius: 6px;
+    margin: 4px 0;
+}
+.leader-row .pos {
+    color: #ffd700;
+    font-weight: bold;
+    min-width: 30px;
+}
+.leader-row .cash {
+    color: #4ecdc4;
+}
+.hint {
+    font-size: 12px;
+    color: #888;
+    margin-top: 6px;
+}
+@media (max-width: 600px) {
+    header { padding: 10px 12px; }
+    header h1 { font-size: 18px; }
+    header nav button { padding: 6px 10px; font-size: 13px; }
+    main { padding: 16px 12px; }
+    h2 { font-size: 20px; }
+    .stat .value { font-size: 15px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <h1>Enrique RP</h1>
+    <nav>
+        <button onclick="window.open('https://enrique-forum.onrender.com','_blank')">Форум</button>
+        <button id="navLogin" class="gold" onclick="showScreen('login')">Войти</button>
+        <button id="navCabinet" style="display:none" onclick="showScreen('cabinet')">Кабинет</button>
+        <button id="navGames" style="display:none" onclick="showScreen('games')">Игры</button>
+        <button id="navLeaders" onclick="showScreen('leaders')">Лидеры</button>
+        <button id="navLogout" style="display:none" onclick="logout()">Выйти</button>
+    </nav>
+</header>
+
+<main>
+    <!-- ГЛАВНАЯ -->
+    <div class="screen active" id="screen-home">
+        <div class="card">
+            <h2>Добро пожаловать на Enrique RP</h2>
+            <p>Игровой проект SAMP с уникальными мини-играми и заработком внутриигровой валюты.</p>
+            <p>Войди в личный кабинет, чтобы увидеть свою статистику, сыграть в мини-игры и заработать деньги на игровой аккаунт.</p>
+            <button class="action" onclick="showScreen('register')">Регистрация</button>
+            <button class="action" style="background:transparent;color:#ffd700;border:1px solid #ffd700;" onclick="showScreen('login')">Вход</button>
+        </div>
+    </div>
+
+    <!-- ВХОД -->
+    <div class="screen" id="screen-login">
+        <h2>Вход</h2>
+        <div class="card">
+            <input type="text" id="loginName" placeholder="Имя игрока">
+            <input type="password" id="loginPass" placeholder="Пароль">
+            <button class="action" onclick="login()">Войти</button>
+            <div id="loginError"></div>
+            <p class="hint">Нет аккаунта? <a href="#" onclick="showScreen('register');return false;" style="color:#ffd700;">Регистрация</a></p>
+        </div>
+    </div>
+
+    <!-- РЕГИСТРАЦИЯ -->
+    <div class="screen" id="screen-register">
+        <h2>Регистрация</h2>
+        <div class="card">
+            <input type="text" id="regName" placeholder="Имя игрока (3–20 символов)">
+            <input type="password" id="regPass" placeholder="Пароль (мин. 6)">
+            <input type="password" id="regPass2" placeholder="Повтори пароль">
+            <button class="action" onclick="register()">Зарегистрироваться</button>
+            <div id="regError"></div>
+            <p class="hint">Уже есть аккаунт? <a href="#" onclick="showScreen('login');return false;" style="color:#ffd700;">Войти</a></p>
+        </div>
+    </div>
+
+    <!-- КАБИНЕТ -->
+    <div class="screen" id="screen-cabinet">
+        <h2>Личный кабинет</h2>
+        <div class="card">
+            <h3>Основное</h3>
+            <div class="stat-grid" id="cabinetMain"></div>
+        </div>
+        <div class="card">
+            <h3>Прогресс</h3>
+            <div class="stat-grid" id="cabinetProgress"></div>
+        </div>
+        <div class="card">
+            <h3>Статус</h3>
+            <div class="stat-grid" id="cabinetStatus"></div>
+        </div>
+        <div class="card">
+            <h3>Нарушения</h3>
+            <div class="stat-grid" id="cabinetWarns"></div>
+        </div>
+    </div>
+
+    <!-- ИГРЫ -->
+    <div class="screen" id="screen-games">
+        <h2>Мини-игры</h2>
+        <div class="card">
+            <p>Баланс: <span id="gameBalance" style="color:#ffd700;font-weight:bold;">0</span> ₽</p>
+            <p class="hint">Максимальная ставка — половина баланса.</p>
+        </div>
+        <div class="tabs">
+            <button class="active" data-game="dice" onclick="switchGame('dice')">🎲 Кости</button>
+            <button data-game="coin" onclick="switchGame('coin')">🪙 Монетка</button>
+            <button data-game="guess" onclick="switchGame('guess')">🔢 Угадай</button>
+            <button data-game="roulette" onclick="switchGame('roulette')">🎡 Рулетка</button>
+        </div>
+
+        <div class="card">
+            <div id="gameUI"></div>
+            <div id="gameResult"></div>
+        </div>
+    </div>
+
+    <!-- ЛИДЕРЫ -->
+    <div class="screen" id="screen-leaders">
+        <h2>Топ игроков</h2>
+        <div class="card" id="leadersList">Загрузка...</div>
+    </div>
+</main>
+
+<script>
+// ============================================================
+// СОСТОЯНИЕ
+// ============================================================
+const API = "";
+let token = localStorage.getItem("enrique_token") || "";
+let currentUser = null;
+let currentGame = "dice";
+
+// ============================================================
+// УТИЛИТЫ
+// ============================================================
+async function api(url, method = "GET", body = null) {
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = "Bearer " + token;
+
+    const options = { method, headers };
+    if (body) options.body = JSON.stringify(body);
+
+    const res = await fetch(API + url, options);
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+        throw new Error(data.detail || "Ошибка " + res.status);
+    }
+    return data;
+}
+
+function showScreen(name) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    const el = document.getElementById("screen-" + name);
+    if (el) el.classList.add("active");
+
+    if (name === "cabinet") loadCabinet();
+    if (name === "leaders") loadLeaders();
+    if (name === "games" && currentUser) {
+        document.getElementById("gameBalance").textContent = currentUser.cash;
+        renderGame();
+    }
+}
+
+function showError(id, text) {
+    const el = document.getElementById(id);
+    if (text) {
+        el.innerHTML = '<div class="error">' + text + '</div>';
+    } else {
+        el.innerHTML = "";
+    }
+}
+
+// ============================================================
+// АВТОРИЗАЦИЯ
+// ============================================================
+async function login() {
+    showError("loginError", "");
+    const name = document.getElementById("loginName").value.trim();
+    const pass = document.getElementById("loginPass").value;
+
+    if (!name || !pass) {
+        showError("loginError", "Заполни все поля");
+        return;
+    }
+
+    try {
+        const data = await api("/api/login", "POST", { name, password: pass });
+        token = data.token;
+        localStorage.setItem("enrique_token", token);
+        await loadMe();
+        showScreen("cabinet");
+    } catch (e) {
+        showError("loginError", e.message);
+    }
+}
+
+async function register() {
+    showError("regError", "");
+    const name = document.getElementById("regName").value.trim();
+    const pass = document.getElementById("regPass").value;
+    const pass2 = document.getElementById("regPass2").value;
+
+    if (!name || !pass) {
+        showError("regError", "Заполни все поля");
+        return;
+    }
+    if (name.length < 3 || name.length > 20) {
+        showError("regError", "Имя от 3 до 20 символов");
+        return;
+    }
+    if (pass.length < 6) {
+        showError("regError", "Пароль минимум 6 символов");
+        return;
+    }
+    if (pass !== pass2) {
+        showError("regError", "Пароли не совпадают");
+        return;
+    }
+
+    try {
+        const data = await api("/api/register", "POST", { name, password: pass });
+        token = data.token;
+        localStorage.setItem("enrique_token", token);
+        await loadMe();
+        showScreen("cabinet");
+    } catch (e) {
+        showError("regError", e.message);
+    }
+}
+
+function logout() {
+    token = "";
+    currentUser = null;
+    localStorage.removeItem("enrique_token");
+    updateNav();
+    showScreen("home");
+}
+
+async function loadMe() {
+    try {
+        currentUser = await api("/api/me");
+        updateNav();
+    } catch (e) {
+        token = "";
+        localStorage.removeItem("enrique_token");
+        updateNav();
+    }
+}
+
+function updateNav() {
+    const logged = !!currentUser;
+    document.getElementById("navLogin").style.display = logged ? "none" : "block";
+    document.getElementById("navCabinet").style.display = logged ? "block" : "none";
+    document.getElementById("navGames").style.display = logged ? "block" : "none";
+    document.getElementById("navLogout").style.display = logged ? "block" : "none";
+}
+
+// ============================================================
+// КАБИНЕТ
+// ============================================================
+function stat(label, value) {
+    return '<div class="stat"><div class="label">' + label + '</div><div class="value">' + value + '</div></div>';
+}
+
+async function loadCabinet() {
+    if (!currentUser) {
+        try { await loadMe(); } catch (e) { return; }
+    }
+    if (!currentUser) return;
+
+    const u = currentUser;
+
+    document.getElementById("cabinetMain").innerHTML =
+        stat("Имя", u.name) +
+        stat("Уровень", u.level) +
+        stat("Опыт", u.exp) +
+        stat("Всего денег", (u.cash + u.bank).toLocaleString()) +
+        stat("Наличные", u.cash.toLocaleString()) +
+        stat("В банке", u.bank.toLocaleString());
+
+    document.getElementById("cabinetProgress").innerHTML =
+        stat("Убийства", u.kills) +
+        stat("Ранг", u.rank) +
+        stat("Членство", u.member) +
+        stat("Лидерка", u.leader) +
+        stat("Законопослушность", u.zakonp);
+
+    document.getElementById("cabinetStatus").innerHTML =
+        stat("VIP", u.vip ? "Да" : "Нет") +
+        stat("Дней VIP", u.vip_days) +
+        stat("Админ", u.admin);
+
+    document.getElementById("cabinetWarns").innerHTML =
+        stat("Варны", u.warns) +
+        stat("Админ-варны", u.adm_warns) +
+        stat("Лидер-варны", u.leader_warns);
+}
+
+// ============================================================
+// МИНИ-ИГРЫ
+// ============================================================
+function switchGame(name) {
+    currentGame = name;
+    document.querySelectorAll(".tabs button").forEach(b => {
+        b.classList.toggle("active", b.dataset.game === name);
+    });
+    document.getElementById("gameResult").innerHTML = "";
+    renderGame();
+}
+
+function renderGame() {
+    const el = document.getElementById("gameUI");
+    let html = "";
+
+    if (currentGame === "dice") {
+        html = `
+            <p>Бросаем 2 кубика. Сумма 8+ → x2, 5–7 → возврат, меньше → проигрыш.</p>
+            <input type="number" id="bet" placeholder="Ставка" min="100">
+            <button class="action" onclick="playDice()">Бросить кубики</button>
+        `;
+    } else if (currentGame === "coin") {
+        html = `
+            <p>Орёл или решка. Угадал → x2.</p>
+            <input type="number" id="bet" placeholder="Ставка" min="100">
+            <select id="coinChoice">
+                <option value="heads">Орёл</option>
+                <option value="tails">Решка</option>
+            </select>
+            <button class="action" onclick="playCoin()">Бросить монетку</button>
+        `;
+    } else if (currentGame === "guess") {
+        html = `
+            <p>Загадано число 1–10. Угадал → x5.</p>
+            <input type="number" id="bet" placeholder="Ставка" min="100">
+            <input type="number" id="guessNumber" placeholder="Твоё число (1–10)" min="1" max="10">
+            <button class="action" onclick="playGuess()">Угадать</button>
+        `;
+    } else if (currentGame === "roulette") {
+        html = `
+            <p>Красное/чёрное → x2. Зеро → x14.</p>
+            <input type="number" id="bet" placeholder="Ставка" min="100">
+            <select id="rouletteChoice">
+                <option value="red">Красное</option>
+                <option value="black">Чёрное</option>
+                <option value="zero">Зеро (x14)</option>
+            </select>
+            <button class="action" onclick="playRoulette()">Крутить</button>
+        `;
+    }
+
+    el.innerHTML = html;
+}
+
+function getBet() {
+    const v = parseInt(document.getElementById("bet").value);
+    if (!v || v < 100) {
+        throw new Error("Минимальная ставка — 100");
+    }
+    return v;
+}
+
+function showResult(data) {
+    const cls = data.win > 0 ? "success" : "error";
+    document.getElementById("gameResult").innerHTML =
+        '<div class="' + cls + '">' + data.message + '<br>Новый баланс: ' + data.cash.toLocaleString() + ' ₽</div>';
+    currentUser.cash = data.cash;
+    document.getElementById("gameBalance").textContent = data.cash;
+}
+
+async function playDice() {
+    try {
+        const bet = getBet();
+        const data = await api("/api/game/dice", "POST", { bet });
+        showResult(data);
+    } catch (e) {
+        document.getElementById("gameResult").innerHTML = '<div class="error">' + e.message + '</div>';
+    }
+}
+
+async function playCoin() {
+    try {
+        const bet = getBet();
+        const choice = document.getElementById("coinChoice").value;
+        const data = await api("/api/game/coin", "POST", { bet, choice });
+        showResult(data);
+    } catch (e) {
+        document.getElementById("gameResult").innerHTML = '<div class="error">' + e.message + '</div>';
+    }
+}
+
+async function playGuess() {
+    try {
+        const bet = getBet();
+        const choice = document.getElementById("guessNumber").value;
+        if (!choice) throw new Error("Введи число 1–10");
+        const data = await api("/api/game/guess", "POST", { bet, choice });
+        showResult(data);
+    } catch (e) {
+        document.getElementById("gameResult").innerHTML = '<div class="error">' + e.message + '</div>';
+    }
+}
+
+async function playRoulette() {
+    try {
+        const bet = getBet();
+        const choice = document.getElementById("rouletteChoice").value;
+        const data = await api("/api/game/roulette", "POST", { bet, choice });
+        showResult(data);
+    } catch (e) {
+        document.getElementById("gameResult").innerHTML = '<div class="error">' + e.message + '</div>';
+    }
+}
+
+// ============================================================
+// ЛИДЕРЫ
+// ============================================================
+async function loadLeaders() {
+    const el = document.getElementById("leadersList");
+    el.textContent = "Загрузка...";
+    try {
+        const list = await api("/api/leaderboard");
+        if (!list.length) {
+            el.textContent = "Пока пусто";
+            return;
+        }
+        el.innerHTML = list.map((u, i) =>
+            '<div class="leader-row">' +
+                '<span><span class="pos">#' + (i + 1) + '</span> ' + u.name + ' (ур. ' + u.level + ')</span>' +
+                '<span class="cash">' + u.cash.toLocaleString() + ' ₽</span>' +
+            '</div>'
+        ).join("");
+    } catch (e) {
+        el.innerHTML = '<div class="error">' + e.message + '</div>';
+    }
+}
+
+// ============================================================
+// СТАРТ
+// ============================================================
+(async function init() {
+    if (token) {
+        try { await loadMe(); } catch (e) { logout(); }
+    }
+    updateNav();
+})();
+</script>
+</body>
+</html>
